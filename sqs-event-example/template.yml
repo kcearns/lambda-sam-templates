@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Example of processing messages on an SQS queue with Lambda
+Resources:
+  MySQSQueueFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: index.handler
+      Runtime: nodejs12.x
+      Timeout: 30
+      Environment:
+        Variables:
+          DB_NAME: !Ref MySqsQueueDynamoDB
+      Events:
+        MySQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt MySqsQueue.Arn
+      Policies:
+        - AWSLambdaSQSQueueExecutionRole
+        - AmazonDynamoDBFullAccess
+  MySqsQueue:
+    Type: AWS::SQS::Queue
+  MySqsQueueDynamoDB:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      TableName: MySqsQueueDynamoDB
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
