@@ -1,7 +1,7 @@
-const AWS = require("aws-sdk");
-const uuid = require("uuid");
+const AWS = require("aws-sdk")
+const uuid = require("uuid")
 
-const DynamoDB = new AWS.DynamoDB.DocumentClient({ region: "us-east-1" });
+const DynamoDB = new AWS.DynamoDB.DocumentClient({ region: "us-east-1" })
 
 exports.handler = async (event) => {
   const { body } = event.Records[0]
@@ -11,7 +11,7 @@ exports.handler = async (event) => {
       id: uuid.v4(),
       msg: body,
     },
-  };
+  }
   try {
     await DynamoDB.put(params).promise()
     console.log({"success": true, "msg": params})
