@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  MyS3TriggerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: index.handler
+      Runtime: nodejs14.x
+      Timeout: 30
+      Environment:
+        Variables:
+          DB_NAME: !Ref MyS3TriggerFunctionDynamoDB
+      Policies: 
+        - AWSLambdaExecute
+        - AmazonDynamoDBFullAccess
+      Events:
+        MyS3TriggerFunctionEvent:
+          Type: S3
+          Properties:
+            Bucket: !Ref MyS3TriggerFunctionBucket
+            Events: s3:ObjectCreated:*
+  MyS3TriggerFunctionBucket:
+    Type: AWS::S3::Bucket
+  MyS3TriggerFunctionDynamoDB:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      TableName: MyS3TriggerFunctionDynamoDB
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
